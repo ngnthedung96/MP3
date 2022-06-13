@@ -29,6 +29,18 @@ const app = {
             image:"./Resources/IMG/numb.jpg"
         },
         {
+            name:"Waiting for the End",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/Waithing-For-The-End-Linkin-Park.mp3",
+            image:"./Resources/IMG/Waithing-For-The-End-Linkin-Park.mp3"
+        },
+        {
+            name:"Numb/Encore",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/NumbEncore-Explicit-Version-Linkin-Park.mp3",
+            image:"./Resources/IMG/numbencore.jpg"
+        },
+        {
             name:"Faint",
             singer:"Linkin Park",
             path:"./Resources/DATA/path/Faint - Linkin Park.mp3",
@@ -163,7 +175,18 @@ const app = {
                 app.isRandom = true
             }
         })
-        
+        //  xử lý khi ended
+        audio.addEventListener('ended', function(){
+            if (randomBtn.classList.contains('active')){
+                app.randomSong()
+                audio.play()
+            }
+            else{
+                app.nextSong()
+                audio.play()
+            }
+        })
+
         
     },
     prevSong: function(){
