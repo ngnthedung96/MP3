@@ -10,12 +10,46 @@ const progress = $('.progress')
 const nextBtn = $('.btn-next')
 const prevBtn = $('.btn-prev')
 const randomBtn = $('.btn-random')
+const repeatBtn = $('.btn-repeat')
+const playList = $('.playlist')
+
 
 const app = {
     currentIndex: 0,
     isPlayIng: false,
     isRandom: false,
+    isRepeat: false,
     songs: [
+        {
+            name:"In The End",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/In-The-End-Album-Version-Linkin-Park.mp3",
+            image:"./Resources/IMG/intheend.jpg"
+        },
+        {
+            name:"Numb",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/Numb-Album-Version-Linkin-Park.mp3",
+            image:"./Resources/IMG/numb.jpg"
+        },
+        {
+            name:"Waiting for the End",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/Waithing-For-The-End-Linkin-Park.mp3",
+            image:"./Resources/IMG/Waithing-For-The-End-Linkin-Park.mp3"
+        },
+        {
+            name:"Numb/Encore",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/NumbEncore-Explicit-Version-Linkin-Park.mp3",
+            image:"./Resources/IMG/numbencore.jpg"
+        },
+        {
+            name:"Faint",
+            singer:"Linkin Park",
+            path:"./Resources/DATA/path/Faint - Linkin Park.mp3",
+            image:"./Resources/IMG/Faint.jpg"
+        },
         {
             name:"In The End",
             singer:"Linkin Park",
@@ -48,9 +82,9 @@ const app = {
         }
     ],
     render: function(){
-        const htmls = this.songs.map(function(song){
+        const htmls = this.songs.map(function(song,index){
             return `
-            <div class="song">
+            <div class="song ${index === app.currentIndex ? 'active': ''}" data-set="${index}">
                 <div class="thumb" style="background-image: url(${song.image})">
                 </div>
                 <div class="body">
@@ -60,10 +94,8 @@ const app = {
                 <div class="option">
                     <i class="fas fa-ellipsis-h"></i>
                 </div>
-            </div>`
-            
-        })     
-        $('.playlist').innerHTML = htmls.join('')
+            </div>`})     
+        playList.innerHTML = htmls.join('')
     },
     currentSong: function(){
         return this.songs[this.currentIndex]
@@ -181,12 +213,40 @@ const app = {
                 app.randomSong()
                 audio.play()
             }
+            else if(app.isRepeat = true){
+                audio.play()
+            }
             else{
                 app.nextSong()
                 audio.play()
             }
         })
-
+        // xử lý khi repeat song
+        repeatBtn.addEventListener('click', function(){
+            if (app.isRepeat){
+                repeatBtn.classList.remove('active')
+                app.isRepeat = false
+                
+            }
+            else{
+                repeatBtn.classList.add('active')
+                app.isRepeat = true
+            }
+        })
+        // play when click
+        playList.addEventListener('click', function(e){
+            const songNode = e.target.closest('.song:not(.active)')
+            if (e.target.closest('.song:not(.active)') || e.target.closest('.option')){
+                if( songNode){
+                    app.currentIndex = Number(songNode.getAttribute('data-set'))
+                    app.render()
+                    app.loadSong()
+                    audio.play()
+                }
+            }
+            
+        })
+        
         
     },
     prevSong: function(){
@@ -194,14 +254,18 @@ const app = {
         if (this.currentIndex <0){
             this.currentIndex = app.songs.length-1
         }
+        app.render()
         app.loadSong()
+        app.scrollToActiveSong()
     },
     nextSong: function(){
         app.currentIndex ++
         if (this.currentIndex >= app.songs.length){
             this.currentIndex = 0
         }
+        app.render()
         app.loadSong()
+        app.scrollToActiveSong()
     },
     randomSong: function(){
         var newIndex = Math.floor(Math.random()*app.songs.length)
@@ -216,8 +280,34 @@ const app = {
                 }
             }
         }
+        app.render()
         this.loadSong()
+        app.scrollToActiveSong()
     },
+    scrollToActiveSong: function(){
+         if(app.currentIndex <= 6){
+           setTimeout(function(){
+            $('.song.active').scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                
+            })
+           },500)
+         }
+         else{
+            setTimeout(function(){
+                $('.song.active').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    
+                })
+               },500)
+         }
+         
+    },
+    
+    
+    
     start: function(){
         // Định nghĩa các thuộc tính cho obj
         this.currentSong()
